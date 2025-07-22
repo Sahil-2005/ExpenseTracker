@@ -1,0 +1,64 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Flask instance folder
+instance/
+.env
+.env.*
+
+# Environment files and virtualenv
+venv/
+.venv/
+env/
+ENV/
+*.env
+
+# VSCode or other IDE settings
+.vscode/
+.idea/
+
+# SQLite DB (only if using sqlite, remove if using MySQL on XAMPP)
+*.sqlite3
+*.db
+
+# Logs and backups
+*.log
+*.bak
+*.tmp
+
+# System-specific
+.DS_Store
+Thumbs.db
+
+# Cache
+.cache/
+*.egg-info/
+dist/
+build/
+
+# Coverage reports
+htmlcov/
+.coverage
+.tox/
+.pytest_cache/
+
+# Exported CSV/Excel/PDF or AI outputs
+*.csv
+*.xlsx
+*.pdf
+*.out
+*.tmpai*
+
+# Flask session files
+flask_session/
+
+# If using Jupyter for data analysis
+*.ipynb_checkpoints/
+
+# PyInstaller
+*.spec
