@@ -12,6 +12,8 @@ import csv
 from io import StringIO
 from datetime import datetime
 
+from .gemini_utils import generate_financial_suggestions
+
 main = Blueprint('main', __name__)
 
 from . import login_manager
@@ -272,6 +274,35 @@ def expenses():
         db.session.commit()
     all_expenses = Expense.query.filter_by(user_id=current_user.id).all()
     return render_template('expenses.html', expenses=all_expenses)
+
+
+
+@main.route('/ai-suggestions')
+@login_required
+def ai_suggestions():
+    from collections import defaultdict
+
+    user_id = current_user.id
+    expenses = Expense.query.filter_by(user_id=user_id).all()
+
+    income = sum(e.amount for e in expenses if e.type == 'Income')
+    expense_total = sum(e.amount for e in expenses if e.type == 'Expense')
+
+    # Group expenses by category
+    category_totals = defaultdict(float)
+    for e in expenses:
+        if e.type == 'Expense':
+            category_totals[e.category] += e.amount
+
+    expense_summary = ""
+    for category, total in category_totals.items():
+        expense_summary += f"- {category}: ₹{total}\n"
+
+    ai_response = generate_financial_suggestions(income, expense_summary)
+
+    return render_template("ai_suggestions.html", ai_response=ai_response)
+
+
 
 @main.route('/logout')
 @login_required
