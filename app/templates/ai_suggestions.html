@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <h2 class="text-center mb-4">💡 AI-Powered Financial Suggestions</h2>
+
+    {% if ai_response %}
+    <div class="card shadow-sm p-4 bg-light border-0">
+
+        <section class="mb-4">
+            <h5 class="text-danger"><i class="bi bi-exclamation-circle-fill"></i> Overspending</h5>
+            <p>{{ ai_response | regex_search('(?s)(?<=1\\.\\s\\*\\*Overspending:\\*\\*)(.*?)(?=2\\.|$)') | safe }}</p>
+        </section>
+
+        <section class="mb-4">
+            <h5 class="text-success"><i class="bi bi-cash-coin"></i> Estimated Savings</h5>
+            <p>{{ ai_response | regex_search('(?s)(?<=2\\.\\s\\*\\*Estimated Savings:\\*\\*)(.*?)(?=3\\.|$)') | safe }}</p>
+        </section>
+
+        <section class="mb-4">
+            <h5 class="text-primary"><i class="bi bi-bar-chart-line-fill"></i> Improving Savings</h5>
+            <p>{{ ai_response | regex_search('(?s)(?<=3\\.\\s\\*\\*Improving Savings:\\*\\*)(.*?)(?=4\\.|$)') | safe }}</p>
+        </section>
+
+        <section class="mb-4">
+            <h5 class="text-info"><i class="bi bi-piggy-bank-fill"></i> Investment Suggestions</h5>
+            <p>{{ ai_response | regex_search('(?s)(?<=4\\.\\s\\*\\*Investment Suggestions.*?\\*\\*:\\*\\*)(.*?)(?=5\\.|$)') | safe }}</p>
+        </section>
+
+        <section class="mb-3">
+            <h5 class="text-warning"><i class="bi bi-stars"></i> Motivational Quotes</h5>
+            <blockquote class="blockquote fst-italic">
+                {{ ai_response | regex_search('(?s)(?<=5\\.\\s\\*\\*Motivational Quote:\\*\\*)(.*?)(?=Let\\'s|$)') | safe }}
+            </blockquote>
+        </section>
+
+        <div class="alert alert-secondary mt-4">
+            <strong>Next Step:</strong> Let's schedule a follow-up call to discuss your complete expense details and refine these suggestions. Please gather your expense information before our next meeting.
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center mt-4" role="alert">
+        🚫 No data available. Please add income and expense records first.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

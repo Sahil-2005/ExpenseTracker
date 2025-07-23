@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Aaiyashi Tracker</title>
     <link
@@ -18,7 +18,12 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light px-4" id="navbar">
       <a class="navbar-brand" href="/">Aaiyashi Tracker</a>
-      <button class="navbar-toggler nt" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button
+        class="navbar-toggler nt"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+      >
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -40,8 +45,17 @@
             >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.calendar_view') }}">📅 Calendar</a>
-          </li>          
+            <a class="nav-link" href="{{ url_for('main.calendar_view') }}"
+              >📅 Calendar</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              href="{{ url_for('main.ai_suggestions') }}"
+              class="btn btn-info mt-3"
+              >View AI Suggestions</a
+            >
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
           </li>
