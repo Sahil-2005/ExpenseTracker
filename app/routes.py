@@ -277,30 +277,65 @@ def expenses():
 
 
 
+@main.route('/debug-expenses')
+@login_required
+def debug_expenses():
+    expenses = Expense.query.filter_by(user_id=current_user.id).all()
+    return f"Found {len(expenses)} records for user {current_user.id}"
+
+
+
+
 @main.route('/ai-suggestions')
 @login_required
 def ai_suggestions():
     from collections import defaultdict
+    import re
 
     user_id = current_user.id
     expenses = Expense.query.filter_by(user_id=user_id).all()
 
-    income = sum(e.amount for e in expenses if e.type == 'Income')
-    expense_total = sum(e.amount for e in expenses if e.type == 'Expense')
+    income = sum(e.amount for e in expenses if e.type.lower() == 'income')
+    expense_total = sum(e.amount for e in expenses if e.type.lower() == 'expense')
 
-    # Group expenses by category
     category_totals = defaultdict(float)
     for e in expenses:
-        if e.type == 'Expense':
+        if e.type.lower() == 'expense':
             category_totals[e.category] += e.amount
 
     expense_summary = ""
     for category, total in category_totals.items():
         expense_summary += f"- {category}: ₹{total}\n"
 
-    ai_response = generate_financial_suggestions(income, expense_summary)
+    # Debug prints
+    print("Income:", income)
+    print("Expense Summary:\n", expense_summary)
 
-    return render_template("ai_suggestions.html", ai_response=ai_response)
+    ai_response = generate_financial_suggestions(income, expense_summary)
+    print("AI Response:\n", ai_response)
+
+    # Regex extraction
+    def extract_section(pattern):
+        match = re.search(pattern, ai_response, re.DOTALL)
+        return match.group(1).strip() if match else ""
+
+    # ✅ Updated regex to match actual AI output
+
+    overspending = extract_section(r"\*\*1\. .*?Overspending.*?\*\*(.*?)(?=\*\*2\.)")
+    estimated_savings = extract_section(r"\*\*2\. .*?Savings.*?\*\*(.*?)(?=\*\*3\.)")
+    improving_savings = extract_section(r"\*\*3\. .*?Savings.*?\*\*(.*?)(?=\*\*4\.)")
+    investment_suggestions = extract_section(r"\*\*4\. .*?Investment.*?\*\*(.*?)(?=\*\*5\.)")
+    motivational_quote = extract_section(r"\*\*5\. .*?Motivational Quote.*?\*\*(.*)")
+
+    return render_template(
+        "ai_suggestions.html",
+        overspending=overspending,
+        estimated_savings=estimated_savings,
+        improving_savings=improving_savings,
+        investment_suggestions=investment_suggestions,
+        motivational_quote=motivational_quote,
+        ai_response=ai_response
+    )
 
 
 
