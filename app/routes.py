@@ -13,6 +13,8 @@ from io import StringIO
 from datetime import datetime
 
 from .gemini_utils import generate_financial_suggestions
+from .gemini_utils import parse_gemini_response
+
 
 main = Blueprint('main', __name__)
 
@@ -321,11 +323,22 @@ def ai_suggestions():
 
     # ✅ Updated regex to match actual AI output
 
-    overspending = extract_section(r"\*\*1\. .*?Overspending.*?\*\*(.*?)(?=\*\*2\.)")
-    estimated_savings = extract_section(r"\*\*2\. .*?Savings.*?\*\*(.*?)(?=\*\*3\.)")
-    improving_savings = extract_section(r"\*\*3\. .*?Savings.*?\*\*(.*?)(?=\*\*4\.)")
-    investment_suggestions = extract_section(r"\*\*4\. .*?Investment.*?\*\*(.*?)(?=\*\*5\.)")
-    motivational_quote = extract_section(r"\*\*5\. .*?Motivational Quote.*?\*\*(.*)")
+    # overspending = extract_section(r"\*\*1\. .*?Overspending.*?\*\*(.*?)(?=\*\*2\.)")
+    # estimated_savings = extract_section(r"\*\*2\. .*?Savings.*?\*\*(.*?)(?=\*\*3\.)")
+    # improving_savings = extract_section(r"\*\*3\. .*?Savings.*?\*\*(.*?)(?=\*\*4\.)")
+    # investment_suggestions = extract_section(r"\*\*4\. .*?Investment.*?\*\*(.*?)(?=\*\*5\.)")
+    # motivational_quote = extract_section(r"\*\*5\. .*?Motivational Quote.*?\*\*(.*)")
+
+
+    parsed = parse_gemini_response(ai_response)
+
+    overspending = "<br>".join(f"- {point}" for point in parsed["overspending"])
+    estimated_savings = "<br>".join(f"{k}: {v}" for k, v in parsed["savings"].items())
+    improving_savings = "<br>".join(f"- {tip}" for tip in parsed["improvement"])
+    investment_suggestions = "<br>".join(f"- {inv}" for inv in parsed["investment"])
+    motivational_quote = parsed["quote"]
+
+
 
     return render_template(
         "ai_suggestions.html",
