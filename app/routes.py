@@ -13,7 +13,7 @@ from io import StringIO
 from datetime import datetime
 
 from .gemini_utils import generate_financial_suggestions
-from .gemini_utils import parse_gemini_response
+from .gemini_utils import parse_gemini_response, handle_user_query
 
 
 main = Blueprint('main', __name__)
@@ -288,11 +288,76 @@ def debug_expenses():
 
 
 
-@main.route('/ai-suggestions')
+# @main.route('/ai-suggestions')
+# @login_required
+# def ai_suggestions():
+#     from collections import defaultdict
+#     import re
+
+#     user_id = current_user.id
+#     expenses = Expense.query.filter_by(user_id=user_id).all()
+
+#     income = sum(e.amount for e in expenses if e.type.lower() == 'income')
+#     expense_total = sum(e.amount for e in expenses if e.type.lower() == 'expense')
+
+#     category_totals = defaultdict(float)
+#     for e in expenses:
+#         if e.type.lower() == 'expense':
+#             category_totals[e.category] += e.amount
+
+#     expense_summary = ""
+#     for category, total in category_totals.items():
+#         expense_summary += f"- {category}: ₹{total}\n"
+
+#     # Debug prints
+#     print("Income:", income)
+#     print("Expense Summary:\n", expense_summary)
+
+#     ai_response = generate_financial_suggestions(income, expense_summary)
+#     print("AI Response:\n", ai_response)
+
+#     # Regex extraction
+#     def extract_section(pattern):
+#         match = re.search(pattern, ai_response, re.DOTALL)
+#         return match.group(1).strip() if match else ""
+
+#     # ✅ Updated regex to match actual AI output
+
+#     # overspending = extract_section(r"\*\*1\. .*?Overspending.*?\*\*(.*?)(?=\*\*2\.)")
+#     # estimated_savings = extract_section(r"\*\*2\. .*?Savings.*?\*\*(.*?)(?=\*\*3\.)")
+#     # improving_savings = extract_section(r"\*\*3\. .*?Savings.*?\*\*(.*?)(?=\*\*4\.)")
+#     # investment_suggestions = extract_section(r"\*\*4\. .*?Investment.*?\*\*(.*?)(?=\*\*5\.)")
+#     # motivational_quote = extract_section(r"\*\*5\. .*?Motivational Quote.*?\*\*(.*)")
+
+
+#     parsed = parse_gemini_response(ai_response)
+
+#     overspending = "<br>".join(f"- {point}" for point in parsed["overspending"])
+#     estimated_savings = "<br>".join(f"{k}: {v}" for k, v in parsed["savings"].items())
+#     improving_savings = "<br>".join(f"- {tip}" for tip in parsed["improvement"])
+#     investment_suggestions = "<br>".join(f"- {inv}" for inv in parsed["investment"])
+#     motivational_quote = parsed["quote"]
+
+
+
+#     return render_template(
+#         "ai_suggestions.html",
+#         overspending=overspending,
+#         estimated_savings=estimated_savings,
+#         improving_savings=improving_savings,
+#         investment_suggestions=investment_suggestions,
+#         motivational_quote=motivational_quote,
+#         ai_response=ai_response
+#     )
+
+
+
+
+@main.route('/ai-suggestions', methods=['GET', 'POST'])
 @login_required
 def ai_suggestions():
     from collections import defaultdict
-    import re
+    
 
     user_id = current_user.id
     expenses = Expense.query.filter_by(user_id=user_id).all()
@@ -309,27 +374,7 @@ def ai_suggestions():
     for category, total in category_totals.items():
         expense_summary += f"- {category}: ₹{total}\n"
 
-    # Debug prints
-    print("Income:", income)
-    print("Expense Summary:\n", expense_summary)
-
     ai_response = generate_financial_suggestions(income, expense_summary)
-    print("AI Response:\n", ai_response)
-
-    # Regex extraction
-    def extract_section(pattern):
-        match = re.search(pattern, ai_response, re.DOTALL)
-        return match.group(1).strip() if match else ""
-
-    # ✅ Updated regex to match actual AI output
-
-    # overspending = extract_section(r"\*\*1\. .*?Overspending.*?\*\*(.*?)(?=\*\*2\.)")
-    # estimated_savings = extract_section(r"\*\*2\. .*?Savings.*?\*\*(.*?)(?=\*\*3\.)")
-    # improving_savings = extract_section(r"\*\*3\. .*?Savings.*?\*\*(.*?)(?=\*\*4\.)")
-    # investment_suggestions = extract_section(r"\*\*4\. .*?Investment.*?\*\*(.*?)(?=\*\*5\.)")
-    # motivational_quote = extract_section(r"\*\*5\. .*?Motivational Quote.*?\*\*(.*)")
-
-
     parsed = parse_gemini_response(ai_response)
 
     overspending = "<br>".join(f"- {point}" for point in parsed["overspending"])
@@ -338,7 +383,12 @@ def ai_suggestions():
     investment_suggestions = "<br>".join(f"- {inv}" for inv in parsed["investment"])
     motivational_quote = parsed["quote"]
 
-
+    # Handle user query
+    user_response = None
+    if request.method == "POST":
+        user_query = request.form.get("user_query")
+        if user_query:
+            user_response = handle_user_query(user_query)
 
     return render_template(
         "ai_suggestions.html",
@@ -347,8 +397,10 @@ def ai_suggestions():
         improving_savings=improving_savings,
         investment_suggestions=investment_suggestions,
         motivational_quote=motivational_quote,
-        ai_response=ai_response
+        ai_response=ai_response,
+        user_response=user_response
     )
+
 
 
 

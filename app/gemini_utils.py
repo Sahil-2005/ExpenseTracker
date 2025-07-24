@@ -1,55 +1,3 @@
-# # gemini_utils.py
-# import google.generativeai as genai
-# import os
-# from dotenv import load_dotenv
-
-# load_dotenv()
-# genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-# model = genai.GenerativeModel('gemini-2.5-flash')
-
-# def generate_financial_suggestions(income, expense_data):
-#     prompt = f"""
-# You are a professional financial advisor. Analyze the following user's financial situation:
-
-# - Total Income: ₹{income}
-# - Expenses:
-# {expense_data}
-
-# Return the response in the **exact format below** (no extra commentary or markdown formatting):
-
-# ---
-# Areas of Potential Overspending:
-# - [Point 1]
-# - [Point 2]
-# - ...
-
-# Estimated Savings:
-# - Monthly Savings: ₹[amount]
-# - Weekly Savings: ₹[amount]
-
-# Improving Savings:
-# - [Tip 1]
-# - [Tip 2]
-# - ...
-
-# Investment Suggestions:
-# - [Suggestion 1]
-# - [Suggestion 2]
-# - ...
-
-# Motivational Quote:
-# "[2-line quote about financial discipline]"
-
-# ---
-# Only return content in this format.
-# """
-
-
-#     response = model.generate_content(prompt)
-#     return response.text
-
-
 # gemini_utils.py
 import google.generativeai as genai
 import os
@@ -58,46 +6,6 @@ from dotenv import load_dotenv
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel('gemini-2.5-flash')
-
-# def generate_financial_suggestions(income, expense_data):
-#     prompt = f"""
-# You are a professional financial advisor. Analyze the following user's financial situation:
-
-# - Total Income: ₹{income}
-# - Expenses:
-# {expense_data}
-
-# Return the response in the **exact format below** (no extra commentary or markdown formatting):
-
-# ---
-# Areas of Potential Overspending:
-# - [Point 1]
-# - [Point 2]
-# - ...
-
-# Estimated Savings:
-# - Monthly Savings: ₹[amount]
-# - Weekly Savings: ₹[amount]
-
-# Improving Savings:
-# - [Tip 1]
-# - [Tip 2]
-# - ...
-
-# Investment Suggestions:
-# - [Suggestion 1]
-# - [Suggestion 2]
-# - ...
-
-# Motivational Quote:
-# "[2-line quote about financial discipline]"
-
-# ---
-# Only return content in this format.
-# """
-#     response = model.generate_content(prompt)
-#     return response.text
-
 
 
 def generate_financial_suggestions(income, expense_data):
@@ -119,12 +27,12 @@ Make sure:
 ---
 
 Areas of Potential Overspending:
-- [Explanation of area, why it’s problematic, and how to control it]
+- [Explanation of area, why it's problematic, and how to control it]
 - [Another potential overspending area, why it matters, and suggestion to reduce it]
 - ...
 
 Estimated Savings:
-- Monthly Savings: ₹[estimated amount] (based on user’s income and discretionary expenses)
+- Monthly Savings: ₹[estimated amount] (based on user's income and discretionary expenses)
 - Weekly Savings: ₹[weekly equivalent] (include note on how this can compound over time)
 
 Improving Savings:
@@ -185,3 +93,15 @@ def parse_gemini_response(response_text):
             sections["quote"] = line.strip('"')
 
     return sections
+
+
+def handle_user_query(query):
+    prompt = f"""
+You are a friendly and professional financial assistant. Answer the following user query in a simple and helpful way, relevant to Indian finance if applicable:
+
+User Query: "{query}"
+
+Response:
+"""
+    response = model.generate_content(prompt)
+    return response.text.strip()

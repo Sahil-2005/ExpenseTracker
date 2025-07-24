@@ -39,6 +39,28 @@
                 <strong>Next Step:</strong> Let's schedule a follow-up call to discuss your complete expense details and refine these suggestions. Please gather your expense information before our next meeting.
             </div>
         </div>
+
+        <hr class="my-5" />
+
+        <!-- 🔍 Ask a question to the AI section -->
+        <div class="card shadow-sm p-4 mt-4">
+            <h4 class="mb-3">🗨️ Have a question about your finances?</h4>
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="user_query" class="form-label">Ask your question:</label>
+                    <textarea name="user_query" id="user_query" class="form-control" rows="3" required>{{ request.form.user_query }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Ask AI</button>
+            </form>
+
+            {% if user_response %}
+            <div class="alert alert-info mt-4">
+                <strong>AI Response:</strong>
+                <p>{{ user_response }}</p>
+            </div>
+            {% endif %}
+        </div>
+
         {% else %}
         <div class="alert alert-danger text-center mt-4" role="alert">
             ✅ Data found, but AI suggestions could not be parsed properly. Try again or check the format of the AI output.
@@ -54,6 +76,5 @@
         🚫 No data available. Please add income and expense records first.
     </div>
     {% endif %}
-
 </div>
 {% endblock %}
