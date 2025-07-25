@@ -115,29 +115,40 @@
         toggleBtn.textContent = next === "light" ? "🌞" : "🌙";
       });
 
-      function basicMarkdownToHTML(text) {
-        // Convert special characters to HTML-safe
+      function basicMarkdownToStyledHTML(text) {
+        // Escape basic HTML
         text = text
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;");
 
-        // Convert **bold**
+        // Convert headings
+        text = text.replace(/^### (.*)$/gm, "<h5>$1</h5>");
+        text = text.replace(/^## (.*)$/gm, "<h4>$1</h4>");
+        text = text.replace(/^# (.*)$/gm, "<h3>$1</h3>");
+
+        // Bold + Italic
+        text = text.replace(
+          /\*\*\*(.*?)\*\*\*/g,
+          "<strong><em>$1</em></strong>"
+        );
+
+        // Bold
         text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-        // Convert *italic*
+        // Italic
         text = text.replace(/\*(.*?)\*/g, "<em>$1</em>");
 
-        // Convert numbered list (1. ...)
+        // Ordered list
         text = text.replace(/^\d+\.\s+(.*)$/gm, "<li>$1</li>");
         text = text.replace(/(<li>.*<\/li>)+/g, "<ol>$&</ol>");
 
-        // Convert bullet list (- or *)
+        // Bullet list
         text = text.replace(/^[-*]\s+(.*)$/gm, "<li>$1</li>");
         text = text.replace(/(<li>.*<\/li>)+/g, "<ul>$&</ul>");
 
-        // Line breaks to <br>, except inside <ul>/<ol>
-        text = text.replace(/(?<!<\/(ul|ol|li)>)\n/g, "<br>");
+        // Line breaks
+        text = text.replace(/\n/g, "<br>");
 
         return text;
       }
@@ -152,7 +163,6 @@
 
           if (!query) return;
 
-          // Reset UI
           thinkingMsg.style.display = "block";
           responseDiv.style.display = "none";
           contentDiv.innerHTML = "";
@@ -160,23 +170,16 @@
           try {
             const res = await fetch("/ask-ai", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ user_query: query }),
             });
 
             const data = await res.json();
-            const raw = data.response;
-
-            // Convert basic markdown to HTML
-            const formatted = basicMarkdownToHTML(raw);
-
+            const formatted = basicMarkdownToStyledHTML(data.response);
             contentDiv.innerHTML = formatted;
             responseDiv.style.display = "block";
           } catch (err) {
-            contentDiv.innerHTML =
-              "❌ Something went wrong while contacting the AI.";
+            contentDiv.innerHTML = "❌ AI is currently unavailable.";
             responseDiv.style.display = "block";
           } finally {
             thinkingMsg.style.display = "none";

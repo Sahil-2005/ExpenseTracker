@@ -161,4 +161,57 @@ p a:hover {
   body.dark-mode .fc-daygrid-day-number {
     color: #ccc;
   }
-  
+
+
+
+ .styled-response h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #0d6efd;
+    margin-top: 1.5rem;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 0.4rem;
+  }
+
+  .styled-response h4 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #343a40;
+    margin-top: 1.3rem;
+  }
+
+  .styled-response h5 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-top: 1rem;
+  }
+
+  .styled-response strong {
+    font-weight: 600;
+    color: #212529;
+  }
+
+  .styled-response em {
+    font-style: italic;
+    color: #495057;
+  }
+
+  .styled-response ul,
+  .styled-response ol {
+    margin: 0.75rem 0;
+    padding-left: 1.25rem;
+  }
+
+  .styled-response li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .styled-response p {
+    margin-bottom: 0.75rem;
+  }
+
+  .styled-response br {
+    display: block;
+    margin-bottom: 0.6rem;
+  }
