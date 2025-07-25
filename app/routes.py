@@ -1,5 +1,5 @@
 import io
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, jsonify, render_template, request, redirect, url_for, flash
 from .models import User, Expense
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -400,6 +400,23 @@ def ai_suggestions():
         ai_response=ai_response,
         user_response=user_response
     )
+
+
+@main.route('/ai-suggestions-loading')
+@login_required
+def ai_suggestions_loading():
+    return render_template("ai_suggestions_loading.html")
+
+
+
+@main.route('/ask-ai', methods=['POST'])
+@login_required
+def ask_ai():
+    user_query = request.json.get("user_query")
+    if user_query:
+        user_response = handle_user_query(user_query)
+        return jsonify({"response": user_response})
+    return jsonify({"response": "⚠️ No query provided."}), 400
 
 
 
