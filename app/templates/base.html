@@ -115,19 +115,47 @@
         toggleBtn.textContent = next === "light" ? "🌞" : "🌙";
       });
 
+      function basicMarkdownToHTML(text) {
+        // Convert special characters to HTML-safe
+        text = text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+
+        // Convert **bold**
+        text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+        // Convert *italic*
+        text = text.replace(/\*(.*?)\*/g, "<em>$1</em>");
+
+        // Convert numbered list (1. ...)
+        text = text.replace(/^\d+\.\s+(.*)$/gm, "<li>$1</li>");
+        text = text.replace(/(<li>.*<\/li>)+/g, "<ol>$&</ol>");
+
+        // Convert bullet list (- or *)
+        text = text.replace(/^[-*]\s+(.*)$/gm, "<li>$1</li>");
+        text = text.replace(/(<li>.*<\/li>)+/g, "<ul>$&</ul>");
+
+        // Line breaks to <br>, except inside <ul>/<ol>
+        text = text.replace(/(?<!<\/(ul|ol|li)>)\n/g, "<br>");
+
+        return text;
+      }
+
       document
         .getElementById("ask-ai-btn")
         .addEventListener("click", async () => {
           const query = document.getElementById("user_query").value.trim();
           const responseDiv = document.getElementById("ai-response");
+          const contentDiv = document.getElementById("ai-response-content");
           const thinkingMsg = document.getElementById("thinking-message");
 
           if (!query) return;
 
-          // Show "thinking..." and reset response
+          // Reset UI
           thinkingMsg.style.display = "block";
           responseDiv.style.display = "none";
-          responseDiv.innerHTML = "";
+          contentDiv.innerHTML = "";
 
           try {
             const res = await fetch("/ask-ai", {
@@ -139,10 +167,15 @@
             });
 
             const data = await res.json();
-            responseDiv.innerHTML = `<strong>AI Response:</strong><p>${data.response}</p>`;
+            const raw = data.response;
+
+            // Convert basic markdown to HTML
+            const formatted = basicMarkdownToHTML(raw);
+
+            contentDiv.innerHTML = formatted;
             responseDiv.style.display = "block";
           } catch (err) {
-            responseDiv.innerHTML =
+            contentDiv.innerHTML =
               "❌ Something went wrong while contacting the AI.";
             responseDiv.style.display = "block";
           } finally {
