@@ -164,7 +164,7 @@ p a:hover {
 
 
 
- .styled-response h3 {
+ /* .styled-response h3 {
     font-size: 1.8rem;
     font-weight: bold;
     color: #0d6efd;
@@ -214,4 +214,79 @@ p a:hover {
   .styled-response br {
     display: block;
     margin-bottom: 0.6rem;
-  }
+  } */
+
+
+  .styled-response h3 {
+  font-size: 2rem;               /* Bigger heading */
+  font-weight: 700;
+  color: #0d6efd;                /* Bootstrap primary */
+  margin-top: 1.8rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 0.4rem;
+}
+
+.styled-response h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #212529;
+  margin-top: 1.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.styled-response h5 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #343a40;
+  margin-top: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.styled-response strong {
+  font-weight: 700;
+  color: #000;
+}
+
+.styled-response em {
+  font-style: italic;
+  color: #495057;
+}
+
+.styled-response ul,
+.styled-response ol {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.styled-response li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+  position: relative;
+}
+
+.styled-response li::marker {
+  color: #0d6efd; /* Bootstrap primary for bullets/numbers */
+}
+
+.styled-response p {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  color: #212529;
+  line-height: 1.6;
+}
+
+.styled-response br {
+  margin-bottom: 0.6rem;
+  display: block;
+  content: "";
+}
+
+#ai-response {
+  background-color: #e7f1ff; /* Light blue background */
+  border-left: 5px solid #0d6efd;
+  border-radius: 0.4rem;
+  padding: 1.25rem;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
