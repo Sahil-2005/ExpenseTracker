@@ -49,13 +49,16 @@
               >📅 Calendar</a
             >
           </li>
-          <li class="nav-item">
+          <li class="nav-item d-flex align-items-center ms-2">
             <a
               href="{{ url_for('main.ai_suggestions_loading') }}"
-              class="btn btn-info mt-3"
-              >View AI Suggestions</a
+              class="btn btn-outline-primary btn-sm"
+              style="padding: 6px 12px; font-weight: 500"
             >
+              💡 AI Suggestions
+            </a>
           </li>
+
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
           </li>
