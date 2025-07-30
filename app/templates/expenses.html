@@ -29,6 +29,57 @@
 
 
 
+
+<hr class="my-5">
+
+<h2 class="mb-4 text-center">Add Recurring Expense (EMI, Rent, etc.)</h2>
+<form method="POST" action="{{ url_for('main.add_recurring_expense') }}" class="card p-4 shadow-sm">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label class="form-label">Title</label>
+            <input name="title" class="form-control" placeholder="e.g. Home Loan EMI" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Category</label>
+            <input name="category" class="form-control" placeholder="e.g. Loan" required>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label class="form-label">Amount</label>
+            <input name="amount" type="number" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Start Date</label>
+            <input name="start_date" type="date" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">End Date (optional)</label>
+            <input name="end_date" type="date" class="form-control">
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label class="form-label">Frequency</label>
+            <select name="frequency" class="form-select" required>
+                <option value="Monthly">Monthly</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Yearly">Yearly</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Description</label>
+            <input name="description" class="form-control">
+        </div>
+    </div>
+
+    <button class="btn btn-outline-primary w-100">Add Recurring Expense</button>
+</form>
+
+
+
 <div class="container mt-4">
 
 

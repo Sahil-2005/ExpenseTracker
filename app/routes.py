@@ -20,6 +20,43 @@ main = Blueprint('main', __name__)
 
 from . import login_manager
 
+
+
+
+from flask import request, redirect, url_for, flash
+from datetime import datetime
+from .models import RecurringExpense
+from flask_login import current_user, login_required
+from . import db
+
+@main.route('/add_recurring_expense', methods=['POST'])
+@login_required
+def add_recurring_expense():
+    title = request.form['title']
+    category = request.form['category']
+    amount = float(request.form['amount'])
+    start_date = datetime.strptime(request.form['start_date'], '%Y-%m-%d').date()
+    end_date_raw = request.form.get('end_date')
+    end_date = datetime.strptime(end_date_raw, '%Y-%m-%d').date() if end_date_raw else None
+    frequency = request.form['frequency']
+    description = request.form['description']
+
+    recurring_exp = RecurringExpense(
+        title=title,
+        category=category,
+        amount=amount,
+        start_date=start_date,
+        end_date=end_date,
+        frequency=frequency,
+        description=description,
+        user_id=current_user.id
+    )
+    db.session.add(recurring_exp)
+    db.session.commit()
+    flash("Recurring expense added successfully!", "success")
+    return redirect(url_for('main.expenses'))
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
