@@ -10,7 +10,7 @@ from flask import get_flashed_messages
 from flask import Response
 import csv
 from io import StringIO
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .gemini_utils import generate_financial_suggestions
 from .gemini_utils import parse_gemini_response, handle_user_query
@@ -20,41 +20,7 @@ main = Blueprint('main', __name__)
 
 from . import login_manager
 
-
-
-
-from flask import request, redirect, url_for, flash
-from datetime import datetime
 from .models import RecurringExpense
-from flask_login import current_user, login_required
-from . import db
-
-@main.route('/add_recurring_expense', methods=['POST'])
-@login_required
-def add_recurring_expense():
-    title = request.form['title']
-    category = request.form['category']
-    amount = float(request.form['amount'])
-    start_date = datetime.strptime(request.form['start_date'], '%Y-%m-%d').date()
-    end_date_raw = request.form.get('end_date')
-    end_date = datetime.strptime(end_date_raw, '%Y-%m-%d').date() if end_date_raw else None
-    frequency = request.form['frequency']
-    description = request.form['description']
-
-    recurring_exp = RecurringExpense(
-        title=title,
-        category=category,
-        amount=amount,
-        start_date=start_date,
-        end_date=end_date,
-        frequency=frequency,
-        description=description,
-        user_id=current_user.id
-    )
-    db.session.add(recurring_exp)
-    db.session.commit()
-    flash("Recurring expense added successfully!", "success")
-    return redirect(url_for('main.expenses'))
 
 
 @login_manager.user_loader
@@ -297,22 +263,95 @@ def toggle_theme():
 
 
 
+# @main.route('/expenses', methods=['GET', 'POST'])
+# @login_required
+# def expenses():
+#     if request.method == 'POST':
+#         e = Expense(
+#             type=request.form['type'],  
+#             category=request.form['category'],
+#             amount=request.form['amount'],
+#             description=request.form['description'],
+#             user_id=current_user.id
+#             )
+
+#         db.session.add(e)
+#         db.session.commit()
+#     all_expenses = Expense.query.filter_by(user_id=current_user.id).all()
+#     return render_template('expenses.html', expenses=all_expenses)
+
+
+@main.route('/add_recurring_expense', methods=['POST'])
+@login_required
+def add_recurring_expense():
+    name = request.form['name']
+    amount = float(request.form['amount'])
+    frequency = request.form['frequency']
+    start_date = datetime.strptime(request.form['start_date'], "%Y-%m-%d")  # ✅
+
+    new_recurring = RecurringExpense(
+        name=name,
+        amount=amount,
+        frequency=frequency,
+        start_date=start_date,  # ✅
+        user_id=current_user.id
+    )
+
+    db.session.add(new_recurring)
+    db.session.commit()
+    return redirect(url_for('main.expenses'))
+
+
+
 @main.route('/expenses', methods=['GET', 'POST'])
 @login_required
 def expenses():
     if request.method == 'POST':
         e = Expense(
-            type=request.form['type'],  
+            type=request.form['type'],
             category=request.form['category'],
             amount=request.form['amount'],
             description=request.form['description'],
             user_id=current_user.id
-            )
-
+        )
         db.session.add(e)
         db.session.commit()
-    all_expenses = Expense.query.filter_by(user_id=current_user.id).all()
-    return render_template('expenses.html', expenses=all_expenses)
+
+    # Fetch and apply recurring expenses
+    now = datetime.now().date()
+    recurring_expenses = RecurringExpense.query.filter_by(user_id=current_user.id).all()
+
+    for rec in recurring_expenses:
+        apply = False
+        if rec.last_applied is None:
+            apply = True
+        elif rec.frequency == 'monthly':
+            if rec.last_applied.month != now.month or rec.last_applied.year != now.year:
+                apply = True
+        elif rec.frequency == 'weekly':
+            if rec.last_applied + timedelta(weeks=1) <= now:
+                apply = True
+    
+        if apply:
+            new_exp = Expense(
+                type='Recurring',
+                category=rec.name,
+                amount=rec.amount,
+                description=f"{rec.name} - auto-deducted",
+                user_id=current_user.id
+            )
+            db.session.add(new_exp)
+            rec.last_applied = datetime.now().date()  # store only date if model uses date
+
+    db.session.commit()
+
+    all_expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.date.desc()).all()
+
+    return render_template(
+        'expenses.html',
+        expenses=all_expenses,
+        recurring_expenses=recurring_expenses
+    )
 
 
 

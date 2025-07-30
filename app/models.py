@@ -49,13 +49,13 @@ class Expense(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
+# app/models.py
+
 class RecurringExpense(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    category = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float, nullable=False)
-    start_date = db.Column(db.Date, nullable=False)
-    end_date = db.Column(db.Date, nullable=True)  # Null if ongoing
-    frequency = db.Column(db.String(20), default="Monthly")  # Can be Monthly, Weekly, etc.
-    description = db.Column(db.String(200))
+    frequency = db.Column(db.String(10), nullable=False)  # e.g., 'weekly' or 'monthly'
+    start_date = db.Column(db.Date, nullable=False)  # ✅ Add this line
+    last_applied = db.Column(db.Date, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
