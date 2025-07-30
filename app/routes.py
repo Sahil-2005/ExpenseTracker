@@ -331,7 +331,7 @@ def expenses():
         elif rec.frequency == 'weekly':
             if rec.last_applied + timedelta(weeks=1) <= now:
                 apply = True
-    
+
         if apply:
             new_exp = Expense(
                 type='Recurring',
@@ -429,27 +429,93 @@ def debug_expenses():
 
 
 
+# @main.route('/ai-suggestions', methods=['GET', 'POST'])
+# @login_required
+# def ai_suggestions():
+#     from collections import defaultdict
+    
+
+#     user_id = current_user.id
+#     expenses = Expense.query.filter_by(user_id=user_id).all()
+
+#     income = sum(e.amount for e in expenses if e.type.lower() == 'income')
+#     expense_total = sum(e.amount for e in expenses if e.type.lower() == 'expense')
+
+#     category_totals = defaultdict(float)
+#     for e in expenses:
+#         if e.type.lower() == 'expense':
+#             category_totals[e.category] += e.amount
+
+#     expense_summary = ""
+#     for category, total in category_totals.items():
+#         expense_summary += f"- {category}: ₹{total}\n"
+
+#     ai_response = generate_financial_suggestions(income, expense_summary)
+#     parsed = parse_gemini_response(ai_response)
+
+#     overspending = "<br>".join(f"- {point}" for point in parsed["overspending"])
+#     estimated_savings = "<br>".join(f"{k}: {v}" for k, v in parsed["savings"].items())
+#     improving_savings = "<br>".join(f"- {tip}" for tip in parsed["improvement"])
+#     investment_suggestions = "<br>".join(f"- {inv}" for inv in parsed["investment"])
+#     motivational_quote = parsed["quote"]
+
+#     # Handle user query
+#     user_response = None
+#     if request.method == "POST":
+#         user_query = request.form.get("user_query")
+#         if user_query:
+#             user_response = handle_user_query(user_query)
+
+#     return render_template(
+#         "ai_suggestions.html",
+#         overspending=overspending,
+#         estimated_savings=estimated_savings,
+#         improving_savings=improving_savings,
+#         investment_suggestions=investment_suggestions,
+#         motivational_quote=motivational_quote,
+#         ai_response=ai_response,
+#         user_response=user_response
+#     )
+
+
+
+
 @main.route('/ai-suggestions', methods=['GET', 'POST'])
 @login_required
 def ai_suggestions():
     from collections import defaultdict
-    
+    from app.models import Expense, RecurringExpense  # Make sure this is imported
 
     user_id = current_user.id
+
+    # Get all one-time expenses
     expenses = Expense.query.filter_by(user_id=user_id).all()
 
+    # Get all active recurring expenses
+    recurring_expenses = RecurringExpense.query.filter_by(user_id=user_id).all()
+
+    # Income and expense total from Expense table
     income = sum(e.amount for e in expenses if e.type.lower() == 'income')
     expense_total = sum(e.amount for e in expenses if e.type.lower() == 'expense')
 
     category_totals = defaultdict(float)
+
+    # Add regular expenses to category totals
     for e in expenses:
         if e.type.lower() == 'expense':
             category_totals[e.category] += e.amount
 
+    # Add recurring expenses to category totals
+    for rec in recurring_expenses:
+        category_totals[f"(Recurring) {rec.name}"] += rec.amount
+        expense_total += rec.amount  # Add recurring to overall total
+
+    # Format category-wise expense breakdown
     expense_summary = ""
     for category, total in category_totals.items():
         expense_summary += f"- {category}: ₹{total}\n"
 
+    # Generate AI response
     ai_response = generate_financial_suggestions(income, expense_summary)
     parsed = parse_gemini_response(ai_response)
 
@@ -459,7 +525,7 @@ def ai_suggestions():
     investment_suggestions = "<br>".join(f"- {inv}" for inv in parsed["investment"])
     motivational_quote = parsed["quote"]
 
-    # Handle user query
+    # Handle user query (POST)
     user_response = None
     if request.method == "POST":
         user_query = request.form.get("user_query")
@@ -476,6 +542,8 @@ def ai_suggestions():
         ai_response=ai_response,
         user_response=user_response
     )
+
+
 
 
 @main.route('/ai-suggestions-loading')
