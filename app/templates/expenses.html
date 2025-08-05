@@ -130,9 +130,7 @@
 
   <hr class="my-5">
 
-  
-
-<div class="card shadow-sm mb-4">
+  <div class="card shadow-sm mb-4">
   <div class="card-body">
     <h5 class="card-title mb-3">🔁 Active Recurring Expenses</h5>
 
@@ -143,9 +141,12 @@
           <tr>
             <th>#</th>
             <th>Expense Name</th>
-            <th>Amount (₹)</th>
+            <th>Total Amount (₹)</th>
+            <th>Installment (₹)</th>
             <th>Frequency</th>
             <th>Start Date</th>
+            <th>End Date</th>
+            <th>Remaining</th>
             <th>Last Applied</th>
           </tr>
         </thead>
@@ -154,9 +155,12 @@
           <tr>
             <td>{{ loop.index }}</td>
             <td>{{ rec.name }}</td>
-            <td>{{ "%.2f"|format(rec.amount) }}</td>
+            <td>{{ "%.2f"|format(rec.total_amount) }}</td>
+            <td>{{ "%.2f"|format(rec.installment_amount) }}</td>
             <td>{{ rec.frequency.capitalize() }}</td>
             <td>{{ rec.start_date.strftime('%d %b %Y') }}</td>
+            <td>{{ rec.end_date.strftime('%d %b %Y') }}</td>
+            <td>{{ rec.installments_remaining }}</td>
             <td>
               {% if rec.last_applied %}
                 {{ rec.last_applied.strftime('%d %b %Y') }}
@@ -175,5 +179,4 @@
   </div>
 </div>
 
-  
 {% endblock %}

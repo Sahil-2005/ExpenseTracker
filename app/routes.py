@@ -228,27 +228,25 @@ def edit_expense(expense_id):
 def delete_expense(expense_id):
     expense = Expense.query.get_or_404(expense_id)
 
-    # Check if the current user owns the expense
     if expense.user_id != current_user.id:
         flash("Unauthorized access!", "danger")
         return redirect(url_for('main.expenses'))
 
-    # If it's a Recurring expense, also delete it from RecurringExpense table
-    if expense.type == 'Recurring':
+    # If it's a recurring type expense, remove matching recurring entry as well
+    if expense.type.lower() == "recurring":
         recurring = RecurringExpense.query.filter_by(
-            name=expense.category,
-            amount=expense.amount,
+            name=expense.category,  # category stores the recurring name
             user_id=current_user.id
         ).first()
 
         if recurring:
             db.session.delete(recurring)
+            flash(f"Recurring expense '{recurring.name}' also deleted!", "info")
 
     db.session.delete(expense)
     db.session.commit()
     flash('Expense deleted successfully!', 'success')
     return redirect(url_for('main.expenses'))
-
 
 
 
@@ -374,56 +372,6 @@ def add_recurring_expense():
 
 
 
-
-# @main.route('/expenses', methods=['GET', 'POST'])
-# @login_required
-# def expenses():
-#     if request.method == 'POST':
-#         e = Expense(
-#             type=request.form['type'],
-#             category=request.form['category'],
-#             amount=request.form['amount'],
-#             description=request.form['description'],
-#             user_id=current_user.id
-#         )
-#         db.session.add(e)
-#         db.session.commit()
-
-#     # Fetch and apply recurring expenses
-#     now = datetime.now().date()
-#     recurring_expenses = RecurringExpense.query.filter_by(user_id=current_user.id).all()
-
-#     for rec in recurring_expenses:
-#         apply = False
-#         if rec.last_applied is None:
-#             apply = True
-#         elif rec.frequency == 'monthly':
-#             if rec.last_applied.month != now.month or rec.last_applied.year != now.year:
-#                 apply = True
-#         elif rec.frequency == 'weekly':
-#             if rec.last_applied + timedelta(weeks=1) <= now:
-#                 apply = True
-
-#         if apply:
-#             new_exp = Expense(
-#                 type='Recurring',
-#                 category=rec.name,
-#                 amount=rec.amount,
-#                 description=f"{rec.name} - auto-deducted",
-#                 user_id=current_user.id
-#             )
-#             db.session.add(new_exp)
-#             rec.last_applied = datetime.now().date()  # store only date if model uses date
-
-#     db.session.commit()
-
-#     all_expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.date.desc()).all()
-
-#     return render_template(
-#         'expenses.html',
-#         expenses=all_expenses,
-#         recurring_expenses=recurring_expenses
-#     )
 
 
 @main.route('/expenses', methods=['GET', 'POST'])
