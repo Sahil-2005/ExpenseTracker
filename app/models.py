@@ -51,11 +51,23 @@ class Expense(db.Model):
 
 # app/models.py
 
+# class RecurringExpense(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(100), nullable=False)
+#     amount = db.Column(db.Float, nullable=False)
+#     frequency = db.Column(db.String(10), nullable=False)  # e.g., 'weekly' or 'monthly'
+#     start_date = db.Column(db.Date, nullable=False)  # ✅ Add this line
+#     last_applied = db.Column(db.Date, nullable=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
 class RecurringExpense(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    amount = db.Column(db.Float, nullable=False)
-    frequency = db.Column(db.String(10), nullable=False)  # e.g., 'weekly' or 'monthly'
-    start_date = db.Column(db.Date, nullable=False)  # ✅ Add this line
+    total_amount = db.Column(db.Float, nullable=False)  # total loan/subscription amount
+    installment_amount = db.Column(db.Float, nullable=False)  # auto-calculated
+    frequency = db.Column(db.String(10), nullable=False)  # weekly/monthly
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)  # auto-calculated
+    installments_remaining = db.Column(db.Integer, nullable=False)  # auto-managed
     last_applied = db.Column(db.Date, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

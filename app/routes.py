@@ -252,6 +252,7 @@ def delete_expense(expense_id):
 
 
 
+
 @main.route('/monthly-breakdown')
 @login_required
 def monthly_breakdown():
@@ -309,25 +310,68 @@ def toggle_theme():
 #     return render_template('expenses.html', expenses=all_expenses)
 
 
+# @main.route('/add_recurring_expense', methods=['POST'])
+# @login_required
+# def add_recurring_expense():
+#     name = request.form['name']
+#     amount = float(request.form['amount'])
+#     frequency = request.form['frequency']
+#     start_date = datetime.strptime(request.form['start_date'], "%Y-%m-%d")  # ✅
+
+#     new_recurring = RecurringExpense(
+#         name=name,
+#         amount=amount,
+#         frequency=frequency,
+#         start_date=start_date,  # ✅
+#         user_id=current_user.id
+#     )
+
+#     db.session.add(new_recurring)
+#     db.session.commit()
+#     return redirect(url_for('main.expenses'))
+
+
+from dateutil.relativedelta import relativedelta  # install python-dateutil
+
 @main.route('/add_recurring_expense', methods=['POST'])
 @login_required
 def add_recurring_expense():
     name = request.form['name']
-    amount = float(request.form['amount'])
+    total_amount = float(request.form['total_amount'])
+    installments = int(request.form['installments'])
     frequency = request.form['frequency']
-    start_date = datetime.strptime(request.form['start_date'], "%Y-%m-%d")  # ✅
+    start_date = datetime.strptime(request.form['start_date'], "%Y-%m-%d").date()
+
+    # Calculate installment amount
+    installment_amount = round(total_amount / installments, 2)
+
+    # Calculate end date
+    if frequency == 'monthly':
+        end_date = start_date + relativedelta(months=installments - 1)
+    elif frequency == 'weekly':
+        end_date = start_date + relativedelta(weeks=installments - 1)
+    else:
+        flash("Invalid frequency selected", "danger")
+        return redirect(url_for('main.expenses'))
 
     new_recurring = RecurringExpense(
         name=name,
-        amount=amount,
+        total_amount=total_amount,
+        installment_amount=installment_amount,
         frequency=frequency,
-        start_date=start_date,  # ✅
+        start_date=start_date,
+        end_date=end_date,
+        installments_remaining=installments,
         user_id=current_user.id
     )
 
     db.session.add(new_recurring)
     db.session.commit()
+    flash("Recurring expense added!", "success")
     return redirect(url_for('main.expenses'))
+
+
+
 
 
 
