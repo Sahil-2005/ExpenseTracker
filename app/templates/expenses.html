@@ -29,7 +29,6 @@
 
 
 
-
 <div class="card shadow-sm mb-4">
   <div class="card-body">
     <h5 class="card-title mb-3">➕ Add Recurring Expense</h5>
@@ -40,8 +39,13 @@
       </div>
 
       <div class="mb-3">
-        <label for="amount" class="form-label">Amount (₹)</label>
-        <input type="number" class="form-control" id="amount" name="amount" required step="0.01">
+        <label for="total_amount" class="form-label">Total Amount (₹)</label>
+        <input type="number" class="form-control" id="total_amount" name="total_amount" required step="0.01">
+      </div>
+
+      <div class="mb-3">
+        <label for="installments" class="form-label">Installments</label>
+        <input type="number" class="form-control" id="installments" name="installments" required min="1" placeholder="e.g. 4 months">
       </div>
 
       <div class="mb-3">
@@ -62,6 +66,7 @@
     </form>
   </div>
 </div>
+
 
 
 
