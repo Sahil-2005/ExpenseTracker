@@ -209,18 +209,46 @@ def edit_expense(expense_id):
 
 
 
+# @main.route('/delete/<int:expense_id>', methods=['POST'])
+# @login_required
+# def delete_expense(expense_id):
+#     expense = Expense.query.get_or_404(expense_id)
+#     if expense.user_id != current_user.id:
+#         flash("Unauthorized access!", "danger")
+#         return redirect(url_for('main.expenses'))
+
+#     db.session.delete(expense)
+#     db.session.commit()
+#     flash('Expense deleted successfully!', 'success')
+#     return redirect(url_for('main.expenses'))
+
+
 @main.route('/delete/<int:expense_id>', methods=['POST'])
 @login_required
 def delete_expense(expense_id):
     expense = Expense.query.get_or_404(expense_id)
+
+    # Check if the current user owns the expense
     if expense.user_id != current_user.id:
         flash("Unauthorized access!", "danger")
         return redirect(url_for('main.expenses'))
+
+    # If it's a Recurring expense, also delete it from RecurringExpense table
+    if expense.type == 'Recurring':
+        recurring = RecurringExpense.query.filter_by(
+            name=expense.category,
+            amount=expense.amount,
+            user_id=current_user.id
+        ).first()
+
+        if recurring:
+            db.session.delete(recurring)
 
     db.session.delete(expense)
     db.session.commit()
     flash('Expense deleted successfully!', 'success')
     return redirect(url_for('main.expenses'))
+
 
 
 
