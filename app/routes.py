@@ -375,6 +375,57 @@ def add_recurring_expense():
 
 
 
+# @main.route('/expenses', methods=['GET', 'POST'])
+# @login_required
+# def expenses():
+#     if request.method == 'POST':
+#         e = Expense(
+#             type=request.form['type'],
+#             category=request.form['category'],
+#             amount=request.form['amount'],
+#             description=request.form['description'],
+#             user_id=current_user.id
+#         )
+#         db.session.add(e)
+#         db.session.commit()
+
+#     # Fetch and apply recurring expenses
+#     now = datetime.now().date()
+#     recurring_expenses = RecurringExpense.query.filter_by(user_id=current_user.id).all()
+
+#     for rec in recurring_expenses:
+#         apply = False
+#         if rec.last_applied is None:
+#             apply = True
+#         elif rec.frequency == 'monthly':
+#             if rec.last_applied.month != now.month or rec.last_applied.year != now.year:
+#                 apply = True
+#         elif rec.frequency == 'weekly':
+#             if rec.last_applied + timedelta(weeks=1) <= now:
+#                 apply = True
+
+#         if apply:
+#             new_exp = Expense(
+#                 type='Recurring',
+#                 category=rec.name,
+#                 amount=rec.amount,
+#                 description=f"{rec.name} - auto-deducted",
+#                 user_id=current_user.id
+#             )
+#             db.session.add(new_exp)
+#             rec.last_applied = datetime.now().date()  # store only date if model uses date
+
+#     db.session.commit()
+
+#     all_expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.date.desc()).all()
+
+#     return render_template(
+#         'expenses.html',
+#         expenses=all_expenses,
+#         recurring_expenses=recurring_expenses
+#     )
+
+
 @main.route('/expenses', methods=['GET', 'POST'])
 @login_required
 def expenses():
@@ -389,11 +440,13 @@ def expenses():
         db.session.add(e)
         db.session.commit()
 
-    # Fetch and apply recurring expenses
     now = datetime.now().date()
     recurring_expenses = RecurringExpense.query.filter_by(user_id=current_user.id).all()
 
     for rec in recurring_expenses:
+        if rec.installments_remaining == 0 or now < rec.start_date:
+            continue  # fully paid or not started yet
+
         apply = False
         if rec.last_applied is None:
             apply = True
@@ -408,12 +461,14 @@ def expenses():
             new_exp = Expense(
                 type='Recurring',
                 category=rec.name,
-                amount=rec.amount,
-                description=f"{rec.name} - auto-deducted",
+                amount=rec.installment_amount,
+                description=f"{rec.name} - installment auto-deducted",
                 user_id=current_user.id
             )
             db.session.add(new_exp)
-            rec.last_applied = datetime.now().date()  # store only date if model uses date
+
+            rec.last_applied = now
+            rec.installments_remaining -= 1
 
     db.session.commit()
 
@@ -424,6 +479,7 @@ def expenses():
         expenses=all_expenses,
         recurring_expenses=recurring_expenses
     )
+
 
 
 
