@@ -1,202 +1,320 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>AI Expense Tracker</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light px-4" id="navbar">
-      <a class="navbar-brand" href="/">AI Expense Tracker</a>
-      <button
-        class="navbar-toggler nt"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          {% if current_user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.dashboard') }}"
-              >Dashboard</a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.expenses') }}"
-              >Expenses</a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.monthly_breakdown') }}"
-              >Breakdown</a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.calendar_view') }}"
-              >📅 Calendar</a
-            >
-          </li>
-          <li class="nav-item d-flex align-items-center ms-2">
-            <a
-              href="{{ url_for('main.ai_suggestions_loading') }}"
-              class="btn btn-outline-primary btn-sm"
-              style="padding: 6px 12px; font-weight: 500"
-            >
-              💡 AI Suggestions
-            </a>
-          </li>
+    <script>
+        tailwind.config = {
+            darkMode: ['attribute', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'bounce-subtle': 'bounceSubtle 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        bounceSubtle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --accent-color: #3b82f6;
+        }
 
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
-          </li>
-          {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.register') }}"
-              >Register</a
-            >
-          </li>
-          {% endif %}
-          <li class="nav-item">
-            <button
-              class="btn btn-sm btn-outline-secondary ms-2 mt-2"
-              id="toggle-theme"
-            >
-              🌞
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #60a5fa;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        [data-theme="dark"] .glass-effect {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        [data-theme="dark"] .gradient-bg {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        }
+
+        .navbar-blur {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        [data-theme="dark"] .navbar-blur {
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen transition-all duration-300">
+    <!-- Navigation -->
+    <nav class="navbar-blur fixed top-0 left-0 right-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="/" class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:scale-105 transition-transform duration-200">
+                💰 AI Expense Tracker
+            </a>
+
+            <!-- Mobile menu button -->
+            <button class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" id="mobile-menu-btn">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
             </button>
-          </li>
-        </ul>
-      </div>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-1">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.dashboard') }}" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                    📊 Dashboard
+                </a>
+                <a href="{{ url_for('main.expenses') }}" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                    💳 Expenses
+                </a>
+                <a href="{{ url_for('main.monthly_breakdown') }}" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                    📈 Breakdown
+                </a>
+                <a href="{{ url_for('main.calendar_view') }}" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                    📅 Calendar
+                </a>
+                <a href="{{ url_for('main.ai_suggestions_loading') }}" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg text-sm font-medium hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg animate-bounce-subtle">
+                    💡 AI Suggestions
+                </a>
+                <a href="{{ url_for('main.logout') }}" class="px-4 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                    🚪 Logout
+                </a>
+                {% else %}
+                <a href="{{ url_for('main.login') }}" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                    🔑 Login
+                </a>
+                <a href="{{ url_for('main.register') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg">
+                    ✨ Register
+                </a>
+                {% endif %}
+                
+                <!-- Theme Toggle -->
+                <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ml-2" id="toggle-theme">
+                    🌞
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="md:hidden hidden mt-4 pb-4 border-t border-gray-200 dark:border-gray-700" id="mobile-menu">
+            <div class="flex flex-col space-y-2 pt-4">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.dashboard') }}" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                    📊 Dashboard
+                </a>
+                <a href="{{ url_for('main.expenses') }}" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                    💳 Expenses
+                </a>
+                <a href="{{ url_for('main.monthly_breakdown') }}" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                    📈 Breakdown
+                </a>
+                <a href="{{ url_for('main.calendar_view') }}" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                    📅 Calendar
+                </a>
+                <a href="{{ url_for('main.ai_suggestions_loading') }}" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg text-sm font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg">
+                    💡 AI Suggestions
+                </a>
+                <a href="{{ url_for('main.logout') }}" class="px-4 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                    🚪 Logout
+                </a>
+                {% else %}
+                <a href="{{ url_for('main.login') }}" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                    🔑 Login
+                </a>
+                <a href="{{ url_for('main.register') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200 shadow-lg">
+                    ✨ Register
+                </a>
+                {% endif %}
+            </div>
+        </div>
     </nav>
 
-    <div class="container mt-4">
-      {% with messages = get_flashed_messages() %} {% if messages %} {% for
-      message in messages %}
-      <div class="alert alert-info alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
-      </div>
-      {% endfor %} {% endif %} {% endwith %} {% block content %}{% endblock %}
-    </div>
+    <!-- Main Content -->
+    <main class="pt-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="mb-6 animate-slide-up">
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 px-4 py-3 rounded-lg shadow-sm flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        {{ message }}
+                    </div>
+                    <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 transition-colors" onclick="this.parentElement.parentElement.remove()">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <!-- Page Content -->
+            <div class="animate-fade-in">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
 
     <script>
-      const toggleBtn = document.getElementById("toggle-theme");
-      const html = document.documentElement;
-      const theme = localStorage.getItem("theme") || "light";
-      html.setAttribute("data-theme", theme);
+        // Theme Toggle
+        const toggleBtn = document.getElementById("toggle-theme");
+        const html = document.documentElement;
+        const theme = localStorage.getItem("theme") || "light";
+        html.setAttribute("data-theme", theme);
+        toggleBtn.textContent = theme === "light" ? "🌞" : "🌙";
 
-      // Set the emoji based on the initial theme
-      toggleBtn.textContent = theme === "light" ? "🌞" : "🌙";
-
-      toggleBtn.addEventListener("click", () => {
-        let current = html.getAttribute("data-theme");
-        let next = current === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-
-        // Change emoji based on the new theme
-        toggleBtn.textContent = next === "light" ? "🌞" : "🌙";
-      });
-
-      function basicMarkdownToStyledHTML(text) {
-        // Escape basic HTML
-        text = text
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;");
-
-        // Convert headings
-        text = text.replace(/^### (.*)$/gm, "<h5>$1</h5>");
-        text = text.replace(/^## (.*)$/gm, "<h4>$1</h4>");
-        text = text.replace(/^# (.*)$/gm, "<h3>$1</h3>");
-
-        // Bold + Italic
-        text = text.replace(
-          /\*\*\*(.*?)\*\*\*/g,
-          "<strong><em>$1</em></strong>"
-        );
-
-        // Bold
-        text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-
-        // Italic
-        text = text.replace(/\*(.*?)\*/g, "<em>$1</em>");
-
-        // Ordered list
-        text = text.replace(/^\d+\.\s+(.*)$/gm, "<li>$1</li>");
-        text = text.replace(/(<li>.*<\/li>)+/g, "<ol>$&</ol>");
-
-        // Bullet list
-        text = text.replace(/^[-*]\s+(.*)$/gm, "<li>$1</li>");
-        text = text.replace(/(<li>.*<\/li>)+/g, "<ul>$&</ul>");
-
-        // Line breaks
-        text = text.replace(/\n/g, "<br>");
-
-        return text;
-      }
-
-      document
-        .getElementById("ask-ai-btn")
-        .addEventListener("click", async () => {
-          const query = document.getElementById("user_query").value.trim();
-          const responseDiv = document.getElementById("ai-response");
-          const contentDiv = document.getElementById("ai-response-content");
-          const thinkingMsg = document.getElementById("thinking-message");
-
-          if (!query) return;
-
-          thinkingMsg.style.display = "block";
-          responseDiv.style.display = "none";
-          contentDiv.innerHTML = "";
-
-          try {
-            const res = await fetch("/ask-ai", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ user_query: query }),
-            });
-
-            const data = await res.json();
-            const formatted = basicMarkdownToStyledHTML(data.response);
-            contentDiv.innerHTML = formatted;
-            responseDiv.style.display = "block";
-          } catch (err) {
-            contentDiv.innerHTML = "❌ AI is currently unavailable.";
-            responseDiv.style.display = "block";
-          } finally {
-            thinkingMsg.style.display = "none";
-          }
+        toggleBtn.addEventListener("click", () => {
+            let current = html.getAttribute("data-theme");
+            let next = current === "light" ? "dark" : "light";
+            html.setAttribute("data-theme", next);
+            localStorage.setItem("theme", next);
+            toggleBtn.textContent = next === "light" ? "🌞" : "🌙";
         });
 
-      window.addEventListener("DOMContentLoaded", () => {
-        // Simulate delay just to show the loader (optional)
-        setTimeout(() => {
-          document.getElementById("loading-message").style.display = "none";
-          document.getElementById("suggestion-content").style.display = "block";
-        }, 1000); // 1 second fade-in effect (adjust if needed)
-      });
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        mobileMenuBtn.addEventListener("click", () => {
+            mobileMenu.classList.toggle("hidden");
+        });
+
+        // Markdown to HTML function
+        function basicMarkdownToStyledHTML(text) {
+            text = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            text = text.replace(/^### (.*)$/gm, "<h5 class='text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200'>$1</h5>");
+            text = text.replace(/^## (.*)$/gm, "<h4 class='text-xl font-semibold mb-3 text-gray-800 dark:text-gray-200'>$1</h4>");
+            text = text.replace(/^# (.*)$/gm, "<h3 class='text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200'>$1</h3>");
+
+            text = text.replace(/\*\*\*(.*?)\*\*\*/g, "<strong class='font-bold'><em class='italic'>$1</em></strong>");
+            text = text.replace(/\*\*(.*?)\*\*/g, "<strong class='font-bold text-gray-800 dark:text-gray-200'>$1</strong>");
+            text = text.replace(/\*(.*?)\*/g, "<em class='italic text-gray-700 dark:text-gray-300'>$1</em>");
+
+            text = text.replace(/^\d+\.\s+(.*)$/gm, "<li class='mb-1 text-gray-700 dark:text-gray-300'>$1</li>");
+            text = text.replace(/(<li>.*<\/li>)+/g, "<ol class='list-decimal list-inside mb-4 space-y-1'>$&</ol>");
+
+            text = text.replace(/^[-*]\s+(.*)$/gm, "<li class='mb-1 text-gray-700 dark:text-gray-300'>$1</li>");
+            text = text.replace(/(<li>.*<\/li>)+/g, "<ul class='list-disc list-inside mb-4 space-y-1'>$&</ul>");
+
+            text = text.replace(/\n/g, "<br>");
+            return text;
+        }
+
+        // AI Query Handler
+        if (document.getElementById("ask-ai-btn")) {
+            document.getElementById("ask-ai-btn").addEventListener("click", async () => {
+                const query = document.getElementById("user_query").value.trim();
+                const responseDiv = document.getElementById("ai-response");
+                const contentDiv = document.getElementById("ai-response-content");
+                const thinkingMsg = document.getElementById("thinking-message");
+
+                if (!query) return;
+
+                thinkingMsg.style.display = "block";
+                responseDiv.style.display = "none";
+                contentDiv.innerHTML = "";
+
+                try {
+                    const res = await fetch("/ask-ai", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ user_query: query }),
+                    });
+                    const data = await res.json();
+                    const formatted = basicMarkdownToStyledHTML(data.response);
+                    contentDiv.innerHTML = formatted;
+                    responseDiv.style.display = "block";
+                } catch (err) {
+                    contentDiv.innerHTML = "<div class='text-red-600 dark:text-red-400'>❌ AI is currently unavailable.</div>";
+                    responseDiv.style.display = "block";
+                } finally {
+                    thinkingMsg.style.display = "none";
+                }
+            });
+        }
+
+        // Loading animation
+        window.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => {
+                const loadingMsg = document.getElementById("loading-message");
+                const suggestionContent = document.getElementById("suggestion-content");
+                if (loadingMsg) loadingMsg.style.display = "none";
+                if (suggestionContent) suggestionContent.style.display = "block";
+            }, 1000);
+        });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+</body>
 </html>
