@@ -1,197 +1,315 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h4 class="text-center mb-2">👋 Welcome back, <strong>{{ username }}</strong>!</h4>
-<h2 class="text-center mb-4">Dashboard</h2>
+<div class="space-y-8 animate-fade-in">
+    <!-- Welcome Header -->
+    <div class="text-center space-y-2">
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            👋 Welcome back, <span class="text-gray-800 dark:text-gray-100">{{ username }}</span>!
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-400 font-medium">Dashboard Overview</p>
+    </div>
 
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Total Income Card -->
+        <div class="group">
+            <div class="glass-effect rounded-2xl p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] border border-green-200/20 dark:border-green-800/20">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-500 dark:text-gray-400 font-medium">This Month</div>
+                        <div class="text-xs text-green-600 dark:text-green-400 flex items-center">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                            </svg>
+                            +12.5%
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Total Income</h3>
+                    <p class="text-3xl font-bold text-green-600 dark:text-green-400">₹{{ income }}</p>
+                </div>
+                <div class="mt-4 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full animate-pulse" style="width: 75%;"></div>
+                </div>
+            </div>
+        </div>
 
-<div class="row mb-4">
-  <div class="col-12 col-md-6 mb-3 mb-md-0">
-        <div class="card text-center shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Total Income</h5>
-                <p class="text-success fw-bold fs-4">₹{{ income }}</p>
+        <!-- Total Expense Card -->
+        <div class="group">
+            <div class="glass-effect rounded-2xl p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] border border-red-200/20 dark:border-red-800/20">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-500 dark:text-gray-400 font-medium">This Month</div>
+                        <div class="text-xs text-red-600 dark:text-red-400 flex items-center">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
+                            </svg>
+                            +8.2%
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Total Expense</h3>
+                    <p class="text-3xl font-bold text-red-600 dark:text-red-400">₹{{ total_expense }}</p>
+                </div>
+                <div class="mt-4 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-red-500 to-pink-600 rounded-full animate-pulse" style="width: 60%;"></div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-6">
-        <div class="card text-center shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Total Expense</h5>
-                <p class="text-danger fw-bold fs-4">₹{{ total_expense }}</p>
+
+    <!-- Net Balance Card -->
+    <div class="glass-effect rounded-2xl p-6 border border-blue-200/20 dark:border-blue-800/20">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 00-2-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Net Balance</h3>
+                    <p class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        ₹{{ income - total_expense }}
+                    </p>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-sm text-gray-500 dark:text-gray-400">Savings Rate</div>
+                <div class="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                    {{ "%.1f"|format(((income - total_expense) / income * 100) if income > 0 else 0) }}%
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="glass-effect rounded-2xl p-6 border border-gray-200/20 dark:border-gray-700/20">
+        <!-- Chart Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div>
+                <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">📊 Spending Breakdown</h3>
+                <p class="text-gray-600 dark:text-gray-400">Visualize your income and expense patterns</p>
+            </div>
+            
+            <!-- Chart Controls -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative">
+                    <select id="chartTypeSelector" class="appearance-none bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 pr-8 text-sm font-medium text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500">
+                        <option value="pie">🥧 Pie Chart</option>
+                        <option value="bar">📊 Bar Chart</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="relative hidden" id="filterContainer">
+                    <select id="dataFilterSelector" class="appearance-none bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 pr-8 text-sm font-medium text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500">
+                        <option value="both">💰 Income + Expense</option>
+                        <option value="Income">📈 Income Only</option>
+                        <option value="Expense">📉 Expense Only</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Container -->
+        <div id="chart-container" class="relative bg-white dark:bg-gray-800/50 rounded-xl p-4 min-h-[400px] flex items-center justify-center">
+            <canvas id="myChart" class="max-w-full max-h-full"></canvas>
+        </div>
+
+        <!-- Chart Legend Info -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+            <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div class="text-sm text-gray-600 dark:text-gray-400">Total Categories</div>
+                <div class="text-lg font-semibold text-blue-600 dark:text-blue-400">{{ labels|length }}</div>
+            </div>
+            <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div class="text-sm text-gray-600 dark:text-gray-400">Highest Category</div>
+                <div class="text-lg font-semibold text-green-600 dark:text-green-400">₹{{ values|max if values else 0 }}</div>
+            </div>
+            <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <div class="text-sm text-gray-600 dark:text-gray-400">Average Amount</div>
+                <div class="text-lg font-semibold text-purple-600 dark:text-purple-400">₹{{ "%.0f"|format((values|sum / values|length) if values else 0) }}</div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card p-4">
-    <div class="d-flex justify-content-between align-items-center flex-wrap">
-      <h5 class="text-center mb-2">Spending Breakdown</h5>
-  
-      <div class="d-flex gap-2">
-        <select id="chartTypeSelector" class="form-select form-select-sm">
-          <option value="pie">Pie Chart</option>
-          <option value="bar">Bar Chart</option>
-        </select>
-  
-        <select id="dataFilterSelector" class="form-select form-select-sm d-none">
-          <option value="both">Income + Expense</option>
-          <option value="Income">Income Only</option>
-          <option value="Expense">Expense Only</option>
-        </select>
-      </div>
-    </div>
-  
-
-    <div id="chart-container" class="mt-4 mx-auto">
-      <canvas id="myChart"></canvas>
-    </div>
-    
-    
-  </div>
-  
-  
-
-  <script>
+<script>
     const ctx = document.getElementById('myChart').getContext('2d');
-  
+    
     const allLabels = {{ labels | tojson }};
     const allValues = {{ values | tojson }};
-    const allTypes = {{ types | tojson }};  // You'll need to pass this list from Flask: type per entry
-  
+    const allTypes = {{ types | tojson }};
+    
     let chartType = 'pie';
     let chart;
-  
+    
+    // Enhanced color palette with gradients
     const backgroundColors = [
-      '#4CAF50', '#F44336', '#2196F3', '#FF9800', '#9C27B0', '#3F51B5',
-      '#E91E63', '#00BCD4', '#8BC34A', '#FFC107', '#795548', '#607D8B'
+        '#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899',
+        '#06B6D4', '#84CC16', '#F97316', '#6366F1', '#14B8A6', '#F43F5E'
     ];
-  
+    
+    const borderColors = [
+        '#1D4ED8', '#DC2626', '#059669', '#D97706', '#7C3AED', '#DB2777',
+        '#0891B2', '#65A30D', '#EA580C', '#4F46E5', '#0D9488', '#E11D48'
+    ];
+
     function getFilteredData(filter) {
-      if (chartType === 'pie' || filter === 'both') {
-        return {
-          labels: allLabels,
-          data: allValues
-        };
-      }
-  
-      const filteredLabels = [];
-      const filteredValues = [];
-  
-      for (let i = 0; i < allLabels.length; i++) {
-        if (allTypes[i] === filter) {
-          filteredLabels.push(allLabels[i]);
-          filteredValues.push(allValues[i]);
+        if (chartType === 'pie' || filter === 'both') {
+            return {
+                labels: allLabels,
+                data: allValues
+            };
         }
-      }
-  
-      return {
-        labels: filteredLabels,
-        data: filteredValues
-      };
-    }
-  
-    function renderChart1(type, filter = 'both') {
-      const filtered = getFilteredData(filter);
-      chart = new Chart(ctx, {
-        type: type,
-        data: {
-          labels: filtered.labels,
-          datasets: [{
-            label: 'Income & Expense Distribution',
-            data: filtered.data,
-            backgroundColor: backgroundColors,
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: type === 'pie' ? 'right' : 'top'
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  let label = context.label || '';
-                  let value = context.raw || 0;
-                  return `${label}: ₹${value}`;
-                }
-              }
+        
+        const filteredLabels = [];
+        const filteredValues = [];
+        
+        for (let i = 0; i < allLabels.length; i++) {
+            if (allTypes[i] === filter) {
+                filteredLabels.push(allLabels[i]);
+                filteredValues.push(allValues[i]);
             }
-          }
         }
-      });
+        
+        return {
+            labels: filteredLabels,
+            data: filteredValues
+        };
     }
-  
 
     function renderChart(type, filter = 'both') {
-      const chartContainer = document.getElementById('chart-container');
-    
-      // Update container class
-      if (type === 'bar') {
-        chartContainer.classList.add('bar-chart');
-      } else {
-        chartContainer.classList.remove('bar-chart');
-      }
-    
-      const filtered = getFilteredData(filter);
-      chart = new Chart(ctx, {
-        type: type,
-        data: {
-          labels: filtered.labels,
-          datasets: [{
-            label: 'Income & Expense Distribution',
-            data: filtered.data,
-            backgroundColor: backgroundColors,
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: type === 'pie' ? 'right' : 'top'
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  let label = context.label || '';
-                  let value = context.raw || 0;
-                  return `${label}: ₹${value}`;
-                }
-              }
-            }
-          }
+        const chartContainer = document.getElementById('chart-container');
+        const filtered = getFilteredData(filter);
+        
+        // Destroy existing chart
+        if (chart) {
+            chart.destroy();
         }
-      });
+        
+        chart = new Chart(ctx, {
+            type: type,
+            data: {
+                labels: filtered.labels,
+                datasets: [{
+                    label: 'Amount (₹)',
+                    data: filtered.data,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 2,
+                    hoverBorderWidth: 3,
+                    hoverBorderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: type === 'pie' ? 'right' : 'top',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#3B82F6',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                let value = context.raw || 0;
+                                let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                let percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ₹${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                scales: type === 'bar' ? {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value;
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                } : {},
+                animation: {
+                    animateScale: true,
+                    animateRotate: true,
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
     }
-    
+
+    // Event Listeners
     document.getElementById('chartTypeSelector').addEventListener('change', function () {
-      chartType = this.value;
-      chart.destroy();
-  
-      const filterSelector = document.getElementById('dataFilterSelector');
-  
-      if (chartType === 'bar') {
-        filterSelector.classList.remove('d-none');
-        renderChart(chartType, filterSelector.value);
-      } else {
-        filterSelector.classList.add('d-none');
-        renderChart(chartType);
-      }
+        chartType = this.value;
+        const filterContainer = document.getElementById('filterContainer');
+        const filterSelector = document.getElementById('dataFilterSelector');
+        
+        if (chartType === 'bar') {
+            filterContainer.classList.remove('hidden');
+            renderChart(chartType, filterSelector.value);
+        } else {
+            filterContainer.classList.add('hidden');
+            renderChart(chartType);
+        }
     });
-  
+
     document.getElementById('dataFilterSelector').addEventListener('change', function () {
-      if (chartType === 'bar') {
-        chart.destroy();
-        renderChart('bar', this.value);
-      }
+        if (chartType === 'bar') {
+            renderChart('bar', this.value);
+        }
     });
-  
-    // Initial render
-    renderChart('pie');
-  </script>
-  
+
+    // Initial render with animation delay
+    setTimeout(() => {
+        renderChart('pie');
+    }, 300);
+</script>
+
 {% endblock %}
