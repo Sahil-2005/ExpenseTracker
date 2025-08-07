@@ -490,8 +490,11 @@ def ai_suggestions():
 
     # Add recurring expenses to category totals
     for rec in recurring_expenses:
-        category_totals[f"(Recurring) {rec.name}"] += rec.amount
-        expense_total += rec.amount  # Add recurring to overall total
+        # category_totals[f"(Recurring) {rec.name}"] += rec.amount
+        # expense_total += rec.amount  # Add recurring to overall total
+        category_totals[f"(Recurring) {rec.name}"] += rec.installment_amount
+        expense_total += rec.installment_amount
+
 
     # Format category-wise expense breakdown
     expense_summary = ""

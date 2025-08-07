@@ -154,8 +154,11 @@ def handle_user_query(query):
             category_totals[e.category] += e.amount
 
     for rec in recurring_expenses:
-        category_totals[f"(Recurring) {rec.name}"] += rec.amount
-        expense_total += rec.amount
+        # category_totals[f"(Recurring) {rec.name}"] += rec.amount
+        # expense_total += rec.amount
+        category_totals[f"(Recurring) {rec.name}"] += rec.installment_amount
+        expense_total += rec.installment_amount
+
 
     expense_summary = "\n".join(f"- {cat}: ₹{amt}" for cat, amt in category_totals.items())
 
