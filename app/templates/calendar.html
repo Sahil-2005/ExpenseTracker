@@ -1,78 +1,297 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-4 mb-5">
-    <h2 class="text-center mb-4"> 🗓️Calendar View</h2>
+<div class="space-y-8 animate-fade-in">
+    <!-- Page Header -->
+    <div class="text-center space-y-2">
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            📅 Calendar View
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-400 font-medium">View your transactions in calendar format</p>
+    </div>
 
-      <div id="calendar" class="shadow p-3 rounded"></div>
-    
+    <!-- Calendar Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="glass-effect rounded-xl p-4 border border-blue-200/20 dark:border-blue-800/20 text-center">
+            <div class="p-2 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-lg shadow-lg mx-auto w-fit mb-2">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">This Month</div>
+            <div class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ events|length }}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-500">Events</div>
+        </div>
+
+        <div class="glass-effect rounded-xl p-4 border border-green-200/20 dark:border-green-800/20 text-center">
+            <div class="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg shadow-lg mx-auto w-fit mb-2">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                </svg>
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">Income</div>
+            <div class="text-lg font-bold text-green-600 dark:text-green-400">
+                {{ events|selectattr('className', 'equalto', 'income-event')|list|length }}
+            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-500">Transactions</div>
+        </div>
+
+        <div class="glass-effect rounded-xl p-4 border border-red-200/20 dark:border-red-800/20 text-center">
+            <div class="p-2 bg-gradient-to-r from-red-500 to-pink-600 rounded-lg shadow-lg mx-auto w-fit mb-2">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
+                </svg>
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">Expenses</div>
+            <div class="text-lg font-bold text-red-600 dark:text-red-400">
+                {{ events|selectattr('className', 'equalto', 'expense-event')|list|length }}
+            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-500">Transactions</div>
+        </div>
+
+        <div class="glass-effect rounded-xl p-4 border border-purple-200/20 dark:border-purple-800/20 text-center">
+            <div class="p-2 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-lg mx-auto w-fit mb-2">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 00-2-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">Categories</div>
+            <div class="text-lg font-bold text-purple-600 dark:text-purple-400">
+                {{ events|map(attribute='extendedProps.category')|unique|list|length }}
+            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-500">Unique</div>
+        </div>
+    </div>
+
+    <!-- Calendar Container -->
+    <div class="glass-effect rounded-2xl p-6 border border-gray-200/20 dark:border-gray-700/20">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Transaction Calendar</h2>
+                <p class="text-gray-600 dark:text-gray-400">Click on any event to view details</p>
+            </div>
+            
+            <!-- Calendar Legend -->
+            <div class="hidden md:flex items-center space-x-4">
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Income</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Expense</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar -->
+        <div id="calendar" class="bg-white dark:bg-gray-800/50 rounded-xl p-4 min-h-[600px]"></div>
+    </div>
+
+    <!-- Mobile Legend -->
+    <div class="md:hidden flex justify-center space-x-6">
+        <div class="flex items-center">
+            <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+            <span class="text-sm text-gray-600 dark:text-gray-400">Income</span>
+        </div>
+        <div class="flex items-center">
+            <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+            <span class="text-sm text-gray-600 dark:text-gray-400">Expense</span>
+        </div>
+    </div>
 </div>
-
-<!-- FullCalendar Styles and Script -->
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
 <!-- FullCalendar CSS -->
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
-
 <!-- FullCalendar JS -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
-
-
-
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const calendarEl = document.getElementById('calendar');
-
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      height: 'auto',
-      events: {{ events | tojson | safe }}
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            height: 'auto',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listWeek'
+            },
+            events: {{ events | tojson | safe }},
+            eventClick: function(info) {
+                // Create a beautiful modal or tooltip for event details
+                const event = info.event;
+                const props = event.extendedProps;
+                
+                // Simple alert for now - you can replace with a modal
+                alert(`
+Transaction Details:
+Type: ${props.type}
+Category: ${props.category}
+Amount: ₹${props.amount}
+Description: ${props.description || 'No description'}
+Date: ${event.start.toLocaleDateString()}
+                `.trim());
+            },
+            eventDidMount: function(info) {
+                // Add custom styling based on event type
+                const event = info.event;
+                const props = event.extendedProps;
+                
+                if (props.type === 'Income') {
+                    info.el.style.backgroundColor = '#10B981';
+                    info.el.style.borderColor = '#059669';
+                } else {
+                    info.el.style.backgroundColor = '#EF4444';
+                    info.el.style.borderColor = '#DC2626';
+                }
+                
+                // Add hover effect
+                info.el.style.cursor = 'pointer';
+                info.el.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+                info.el.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            }
+        });
+        
+        calendar.render();
     });
-
-    calendar.render();
-  });
 </script>
 
 <style>
-    /* Base calendar styling */
+    /* Custom FullCalendar Styling */
     #calendar {
-      background-color: var(--bs-body-bg);
-      color: var(--bs-body-color);
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: var(--bs-box-shadow);
-    }
-  
-    /* Fix weekday header text (Mon, Tue, etc.) */
-    .fc .fc-col-header-cell {
-      background-color: var(--bs-secondary-bg);  /* subtle header bg */
-      color: var(--bs-body-color);               /* readable in both themes */
-      font-weight: 600;
-      text-align: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--bs-border-color);
-    }
-  
-    /* Adjust day cells if needed */
-    .fc .fc-daygrid-day {
-      background-color: var(--bs-body-bg);
-      color: var(--bs-body-color);
-    }
-  
-    /* Event bubble */
-    .fc-event {
-      background-color: var(--bs-primary);
-      border: none;
-      color: #fff;
-    }
-  
-    /* On hover: make events stand out */
-    .fc-event:hover {
-      background-color: var(--bs-primary-dark);
+        font-family: inherit;
     }
 
-    
-  </style>
-  
+    /* Header styling */
+    .fc .fc-toolbar {
+        margin-bottom: 1.5rem;
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .fc .fc-button-primary {
+        background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .fc .fc-button-primary:hover {
+        background: linear-gradient(135deg, #2563EB, #7C3AED);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .fc .fc-button-primary:disabled {
+        background: #9CA3AF;
+        opacity: 0.6;
+    }
+
+    /* Day header styling */
+    .fc .fc-col-header-cell {
+        background: linear-gradient(135deg, #F8FAFC, #E2E8F0);
+        color: var(--text-primary);
+        font-weight: 600;
+        text-align: center;
+        padding: 0.75rem 0;
+        border: 1px solid var(--border-color);
+        font-size: 0.875rem;
+    }
+
+    [data-theme="dark"] .fc .fc-col-header-cell {
+        background: linear-gradient(135deg, #1E293B, #334155);
+        color: var(--text-primary);
+    }
+
+    /* Day cells */
+    .fc .fc-daygrid-day {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        min-height: 100px;
+        transition: background-color 0.2s ease;
+    }
+
+    .fc .fc-daygrid-day:hover {
+        background: var(--bg-secondary);
+    }
+
+    .fc .fc-daygrid-day-number {
+        color: var(--text-primary);
+        font-weight: 500;
+        padding: 0.5rem;
+    }
+
+    /* Today highlighting */
+    .fc .fc-day-today {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1)) !important;
+        border-color: #3B82F6 !important;
+    }
+
+    /* Event styling */
+    .fc-event {
+        border-radius: 0.375rem;
+        border: none;
+        padding: 0.125rem 0.375rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin: 0.125rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+
+    .fc-event:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Event text */
+    .fc-event-title {
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* More events link */
+    .fc .fc-more-link {
+        color: #3B82F6;
+        font-weight: 500;
+        text-decoration: none;
+        padding: 0.25rem;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
+    }
+
+    .fc .fc-more-link:hover {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563EB;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .fc .fc-toolbar {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .fc .fc-toolbar-chunk {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .fc .fc-daygrid-day {
+            min-height: 80px;
+        }
+    }
+</style>
+
 {% endblock %}

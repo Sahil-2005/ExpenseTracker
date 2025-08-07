@@ -116,6 +116,24 @@ def dashboard():
 
 
 
+# @main.route('/calendar')
+# @login_required
+# def calendar_view():
+#     user_id = current_user.id
+#     expenses = Expense.query.filter_by(user_id=user_id).all()
+
+#     events = []
+#     for e in expenses:
+#         events.append({
+#             'title': f"{e.category} - ₹{e.amount}",
+#             'start': e.date.strftime('%Y-%m-%d'),
+#             'color': '#28a745' if e.type == 'Income' else '#dc3545'
+#         })
+
+#     print(events)
+
+#     return render_template('calendar.html', events=events)
+
 @main.route('/calendar')
 @login_required
 def calendar_view():
@@ -124,14 +142,32 @@ def calendar_view():
 
     events = []
     for e in expenses:
+        # events.append({
+        #     'title': f"{e.category} - ₹{e.amount}",
+        #     'start': e.date.strftime('%Y-%m-%d'),
+        #     'color': '#28a745' if e.type == 'Income' else '#dc3545',
+        #     'className': 'income-event' if e.type == 'Income' else 'expense-event',
+        #     'extendedProps': {
+        #         'type': e.type,
+        #         'category': e.category,
+        #         'amount': e.amount,
+        #         'description': e.description
+        #     }
+        # })
         events.append({
             'title': f"{e.category} - ₹{e.amount}",
             'start': e.date.strftime('%Y-%m-%d'),
-            'color': '#28a745' if e.type == 'Income' else '#dc3545'
+            'color': '#28a745' if e.type == 'Income' else '#dc3545',
+            'category': e.category,  # ✅ Added directly
+            'extendedProps': {
+                'type': e.type,
+                'amount': e.amount,
+                'description': e.description
+            }
         })
 
-    print(events)
 
+    print(events)
     return render_template('calendar.html', events=events)
 
 
@@ -236,6 +272,36 @@ def delete_expense(expense_id):
 
 
 
+# @main.route('/monthly-breakdown')
+# @login_required
+# def monthly_breakdown():
+#     from sqlalchemy import extract, func
+#     from collections import defaultdict
+#     import calendar
+
+#     # Step 1: Query to fetch monthly grouped data
+#     monthly_data = db.session.query(
+#         extract('year', Expense.date).label('year'),
+#         extract('month', Expense.date).label('month'),
+#         Expense.type,
+#         func.sum(Expense.amount).label('total')
+#     ).filter_by(user_id=current_user.id).group_by('year', 'month', Expense.type).order_by('year', 'month').all()
+
+#     monthly_summary = defaultdict(lambda: {'Income': 0, 'Expense': 0})
+#     for entry in monthly_data:
+#         label = f"{calendar.month_abbr[int(entry.month)]} {int(entry.year)}"
+#         monthly_summary[label][entry.type] = entry.total
+
+#     labels = list(monthly_summary.keys())
+#     income_data = [monthly_summary[month]['Income'] for month in labels]
+#     expense_data = [monthly_summary[month]['Expense'] for month in labels]
+
+#     return render_template('monthly.html',
+#                            labels=labels,
+#                            income_data=income_data,
+#                            expense_data=expense_data)
+
+
 @main.route('/monthly-breakdown')
 @login_required
 def monthly_breakdown():
@@ -260,10 +326,23 @@ def monthly_breakdown():
     income_data = [monthly_summary[month]['Income'] for month in labels]
     expense_data = [monthly_summary[month]['Expense'] for month in labels]
 
+    # Compute best savings month (max difference between income and expense)
+    best_month_index = 0
+    if income_data and expense_data:
+        differences = [i - e for i, e in zip(income_data, expense_data)]
+        max_diff = max(differences)
+        best_month_index = differences.index(max_diff)
+
+    # Compute highest expense month
+    highest_expense_index = expense_data.index(max(expense_data)) if expense_data else 0
+
     return render_template('monthly.html',
                            labels=labels,
                            income_data=income_data,
-                           expense_data=expense_data)
+                           expense_data=expense_data,
+                           best_month_index=best_month_index,
+                           highest_expense_index=highest_expense_index)
+
 
 
 
