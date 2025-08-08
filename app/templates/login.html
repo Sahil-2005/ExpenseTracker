@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="min-h-[80vh] flex items-center justify-center py-12">
-    <div class="w-full max-w-md">
+    <div class="w-full max-w-md relative">
         <!-- Login Card -->
         <div class="glass-effect rounded-2xl shadow-2xl p-8 animate-slide-up">
             <!-- Header -->
@@ -18,7 +18,7 @@
             </div>
 
             <!-- Login Form -->
-            <form method="POST" class="space-y-6">
+            <form id="loginForm" method="POST" class="space-y-6">
                 <!-- Email Field -->
                 <div class="group">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -26,18 +26,20 @@
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
                             </svg>
                         </div>
                         <input 
                             type="email" 
                             name="email" 
+                            id="email"
                             class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500" 
                             placeholder="Enter your email" 
                             required 
                             autocomplete="off"
                         >
+                        <p id="emailError" class="mt-1 text-sm text-red-500 hidden">Please enter a valid email address.</p>
                     </div>
                 </div>
 
@@ -48,18 +50,20 @@
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                             </svg>
                         </div>
                         <input 
                             type="password" 
                             name="password" 
+                            id="password"
                             class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500" 
                             placeholder="Enter your password" 
                             required 
                             autocomplete="off"
                         >
+                        <p id="passwordError" class="mt-1 text-sm text-red-500 hidden">Password must be at least 6 characters.</p>
                     </div>
                 </div>
 
@@ -95,4 +99,37 @@
         </div>
     </div>
 </div>
-{% endblock %}  
+
+<!-- JavaScript Validation -->
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+        let valid = true;
+
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+
+        // Email validation
+        const emailPattern = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+        if (!emailPattern.test(email.value.trim())) {
+            emailError.classList.remove('hidden');
+            valid = false;
+        } else {
+            emailError.classList.add('hidden');
+        }
+
+        // Password validation
+        if (password.value.trim().length < 6) {
+            passwordError.classList.remove('hidden');
+            valid = false;
+        } else {
+            passwordError.classList.add('hidden');
+        }
+
+        if (!valid) {
+            e.preventDefault(); // Prevent form submission
+        }
+    });
+</script>
+{% endblock %}
