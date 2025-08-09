@@ -2,9 +2,7 @@
 {% block content %}
 <div class="min-h-[80vh] flex items-center justify-center py-12">
     <div class="w-full max-w-md relative">
-        <!-- Register Card -->
         <div class="glass-effect rounded-2xl shadow-2xl p-8 animate-slide-up z-10 relative bg-white dark:bg-gray-900">
-            <!-- Header -->
             <div class="text-center mb-8">
                 <div class="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,9 +15,7 @@
                 <p class="text-gray-600 dark:text-gray-400 mt-2">Join us and start tracking your expenses</p>
             </div>
 
-            <!-- Register Form -->
             <form id="registerForm" method="POST" class="space-y-6">
-                <!-- Username Field -->
                 <div class="group">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Username</label>
                     <div class="relative">
@@ -35,7 +31,6 @@
                     <p class="text-sm text-red-500 mt-1 hidden" id="error-username"></p>
                 </div>
 
-                <!-- Email Field -->
                 <div class="group">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
                     <div class="relative">
@@ -52,7 +47,6 @@
                     <p class="text-sm text-red-500 mt-1 hidden" id="error-email"></p>
                 </div>
 
-                <!-- Password Field -->
                 <div class="group">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
                     <div class="relative">
@@ -69,7 +63,6 @@
                     <p class="text-sm text-red-500 mt-1 hidden" id="error-password"></p>
                 </div>
 
-                <!-- Submit Button -->
                 <button type="submit"
                     class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl">
                     <span class="flex items-center justify-center">
@@ -82,7 +75,6 @@
                 </button>
             </form>
 
-            <!-- Login Link -->
             <div class="mt-8 text-center">
                 <p class="text-gray-600 dark:text-gray-400">
                     Already have an account?
@@ -94,7 +86,6 @@
             </div>
         </div>
 
-        <!-- Decorative Elements -->
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
             <div
                 class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse">
@@ -105,7 +96,6 @@
     </div>
 </div>
 
-<!-- Form Validation Script -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('registerForm');
@@ -113,17 +103,14 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        // Fields
         const username = document.getElementById('username');
         const email = document.getElementById('email');
         const password = document.getElementById('password');
 
-        // Errors
         const errUsername = document.getElementById('error-username');
         const errEmail = document.getElementById('error-email');
         const errPassword = document.getElementById('error-password');
 
-        // Reset
         [errUsername, errEmail, errPassword].forEach(err => err.classList.add('hidden'));
 
         let isValid = true;
@@ -148,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (isValid) {
-            form.submit(); // proceed with actual submission
+            form.submit(); 
         }
     });
 });
