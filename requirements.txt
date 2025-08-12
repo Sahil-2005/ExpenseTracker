@@ -3,5 +3,8 @@ Flask_Login==0.6.3
 flask_sqlalchemy==3.1.1
 protobuf==6.31.1
 python-dotenv==1.1.1
-SQLAlchemy==2.0.42
+python_dateutil==2.8.2
+SQLAlchemy==2.0.43
 Werkzeug==3.1.3
+PyMySQL==1.1.1
+google-generativeai==0.8.5
