@@ -95,46 +95,6 @@ def parse_gemini_response(response_text):
     return sections
 
 
-
-# def handle_user_query(query):
-#     from flask_login import current_user
-#     from app.models import Expense  # Ensure this is correctly imported
-
-#     from collections import defaultdict
-
-#     user_id = current_user.id
-#     expenses = Expense.query.filter_by(user_id=user_id).all()
-
-#     income = sum(e.amount for e in expenses if e.type.lower() == 'income')
-#     expense_total = sum(e.amount for e in expenses if e.type.lower() == 'expense')
-
-#     category_totals = defaultdict(float)
-#     for e in expenses:
-#         if e.type.lower() == 'expense':
-#             category_totals[e.category] += e.amount
-
-#     expense_summary = "\n".join(f"- {cat}: ₹{amt}" for cat, amt in category_totals.items())
-
-#     prompt = f"""
-# You are a friendly and professional financial assistant. A user has asked a question about their finances. 
-
-# Here is their financial summary:
-# - Total Income: ₹{income}
-# - Total Expenses: ₹{expense_total}
-# - Expense Breakdown by Category:
-# {expense_summary}
-
-# Now, respond to their query based on this data. If the query is unrelated to this data, still respond helpfully but briefly.
-
-# User Query: "{query}"
-
-# Response:
-# """
-
-#     response = model.generate_content(prompt)
-#     return response.text.strip()
-
-
 def handle_user_query(query):
     from flask_login import current_user
     from app.models import Expense, RecurringExpense
