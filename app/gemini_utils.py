@@ -8,52 +8,94 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 
+# def generate_financial_suggestions(income, expense_data):
+#     prompt = f"""
+# You are a certified financial advisor helping users understand and improve their personal finance. A user has provided the following information:
+
+# - Total Income: ₹{income}
+# - Expenses:
+# {expense_data}
+
+# Analyze this data and return a detailed and personalized financial advisory report in the EXACT format shown below (no markdown formatting, no numbering, no headings outside the structure).
+
+# Make sure:
+# - Each bullet point gives a **clear explanation**.
+# - Provide **specific advice or steps** the user can take.
+# - Write in **simple, professional, yet empathetic tone**.
+# - Use **Indian financial context** (e.g., SIPs, PPF, etc.)
+
+# ---
+
+# Areas of Potential Overspending:
+# - [Explanation of area, why it's problematic, and how to control it]
+# - [Another potential overspending area, why it matters, and suggestion to reduce it]
+# - ...
+
+# Estimated Savings:
+# - Monthly Savings: ₹[estimated amount] (based on user's income and discretionary expenses)
+# - Weekly Savings: ₹[weekly equivalent] (include note on how this can compound over time)
+
+# Improving Savings:
+# - [Practical and specific tip to improve saving habits with example or method]
+# - [Another savings strategy and how the user can implement it right away]
+# - ...
+
+# Investment Suggestions:
+# - [Detailed suggestion including type of investment, reason, and expected benefit]
+# - [Another investment option with timeframe, risk level, and purpose]
+# - ...
+
+# Motivational Quote:
+# "[2-line motivational quote about financial discipline, savings, or smart investing]"
+
+# ---
+
+# Only return content in this format. Do not include any introduction, explanation, or closing remarks.
+# """
+#     response = model.generate_content(prompt)
+#     return response.text
+
+
 def generate_financial_suggestions(income, expense_data):
     prompt = f"""
-You are a certified financial advisor helping users understand and improve their personal finance. A user has provided the following information:
+You are a certified financial advisor helping a user understand their personal finances. 
+Keep your response **short, practical, and to the point** — each bullet should be 1–2 lines max. 
+Use **Indian finance context** (like SIPs, PPF, FD, credit cards). Avoid long explanations.
 
+User’s details:
 - Total Income: ₹{income}
 - Expenses:
 {expense_data}
 
-Analyze this data and return a detailed and personalized financial advisory report in the EXACT format shown below (no markdown formatting, no numbering, no headings outside the structure).
-
-Make sure:
-- Each bullet point gives a **clear explanation**.
-- Provide **specific advice or steps** the user can take.
-- Write in **simple, professional, yet empathetic tone**.
-- Use **Indian financial context** (e.g., SIPs, PPF, etc.)
-
----
+Follow this exact structure (no extra text, no markdown):
 
 Areas of Potential Overspending:
-- [Explanation of area, why it's problematic, and how to control it]
-- [Another potential overspending area, why it matters, and suggestion to reduce it]
+- [Short explanation of overspending and how to fix it]
+- [Another overspending insight]
 - ...
 
 Estimated Savings:
-- Monthly Savings: ₹[estimated amount] (based on user's income and discretionary expenses)
-- Weekly Savings: ₹[weekly equivalent] (include note on how this can compound over time)
+- Monthly Savings: ₹[approx amount]
+- Weekly Savings: ₹[approx amount] (brief note on compounding benefit)
 
 Improving Savings:
-- [Practical and specific tip to improve saving habits with example or method]
-- [Another savings strategy and how the user can implement it right away]
+- [Simple saving tip or strategy]
+- [Another clear actionable tip]
 - ...
 
 Investment Suggestions:
-- [Detailed suggestion including type of investment, reason, and expected benefit]
-- [Another investment option with timeframe, risk level, and purpose]
+- [Specific option: e.g., SIP, PPF, RD, mutual fund — with reason]
+- [Another option with goal/timeframe]
 - ...
 
 Motivational Quote:
-"[2-line motivational quote about financial discipline, savings, or smart investing]"
+"[2-line quote about smart money habits or discipline]"
 
----
-
-Only return content in this format. Do not include any introduction, explanation, or closing remarks.
+Only output in this format, concise and clean.
 """
     response = model.generate_content(prompt)
     return response.text
+
 
 
 def parse_gemini_response(response_text):

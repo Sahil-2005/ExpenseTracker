@@ -442,7 +442,7 @@ def ai_suggestions():
     # Generate AI response
     ai_response = generate_financial_suggestions(income, expense_summary)
     parsed = parse_gemini_response(ai_response)
-
+    
     overspending = "<br>".join(f"- {point}" for point in parsed["overspending"])
     estimated_savings = "<br>".join(f"{k}: {v}" for k, v in parsed["savings"].items())
     improving_savings = "<br>".join(f"- {tip}" for tip in parsed["improvement"])
