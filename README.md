@@ -94,7 +94,7 @@ Open a Pull Request
 
 🧑‍💻 Author
 Sahil Gawade
-🌐 Portfolio: sahilgawade.netlify.app
+🌐 Portfolio: sahil-gawade.netlify.app
 💼 LinkedIn: linkedin.com/in/sahil-gawade-920a0a242
 📌 GitHub: Sahil-2005
 
